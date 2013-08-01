@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.google.common.base.Splitter;
+
 /**
  * Contains utility methods for rendering data to a formatted console output.
  * E.g. it provides helper methods for rendering ASCII-based data tables.
@@ -82,18 +86,15 @@ public final class UiUtils {
 		return renderTextTable(table);
 	}
 
-	/**
-	 * Renders a textual representation of provided parameter map.
-	 *
-	 * @param parameters Map of parameters (key, value)
-	 * @return The rendered table representation as String
-	 *
-	 */
-	public static String renderParameterInfoDataAsTable(Map<String, String> parameters) {
+	public static String renderParameterInfoDataAsTable(Map<String, String> parameters,
+			boolean withHeader, int lastColumnMaxWidth) {
 		final Table table = new Table();
 
 		table.getHeaders().put(COLUMN_1, new TableHeader("Parameter"));
-		table.getHeaders().put(COLUMN_2, new TableHeader("Value (Configured or Default)"));
+
+		final TableHeader tableHeader2 = new TableHeader("Value (Configured or Default)");
+		tableHeader2.setMaxWidth(lastColumnMaxWidth);
+		table.getHeaders().put(COLUMN_2, tableHeader2);
 
 		for (Entry<String, String> entry : parameters.entrySet()) {
 
@@ -102,14 +103,32 @@ public final class UiUtils {
 			table.getHeaders().get(COLUMN_1).updateWidth(entry.getKey().length());
 			tableRow.addValue(COLUMN_1, entry.getKey());
 
-			table.getHeaders().get(COLUMN_2).updateWidth(entry.getValue() != null ? entry.getValue().length() : 0);
+			int width = entry.getValue() != null ? entry.getValue().length() : 0;
+
+			table.getHeaders().get(COLUMN_2).updateWidth(width);
 			tableRow.addValue(COLUMN_2, entry.getValue());
 
 			table.getRows().add(tableRow);
 		}
 
-		return renderTextTable(table);
+		return renderTextTable(table,withHeader);
 	}
+
+	/**
+	 * Renders a textual representation of provided parameter map.
+	 *
+	 * @param parameters Map of parameters (key, value)
+	 * @return The rendered table representation as String
+	 *
+	 */
+	public static String renderParameterInfoDataAsTable(Map<String, String> parameters) {
+		return renderParameterInfoDataAsTable(parameters, true, -1);
+	}
+
+	public static String renderTextTable(Table table) {
+		return renderTextTable(table, true);
+	}
+
 
 	/**
 	 * Renders a textual representation of the provided {@link Table}
@@ -117,13 +136,15 @@ public final class UiUtils {
 	 * @param table Table data {@link Table}
 	 * @return The rendered table representation as String
 	 */
-	public static String renderTextTable(Table table) {
+	public static String renderTextTable(Table table, boolean withHeader) {
 		final String padding = "  ";
 		final String headerBorder = getHeaderBorder(table.getHeaders());
 		final StringBuilder textTable = new StringBuilder();
 
-		for (TableHeader header : table.getHeaders().values()) {
-			textTable.append(padding + CommonUtils.padRight(header.getName(), header.getWidth()));
+		if (withHeader) {
+			for (TableHeader header : table.getHeaders().values()) {
+				textTable.append(padding + CommonUtils.padRight(header.getName(), header.getWidth()));
+			}
 		}
 
 		textTable.append("\n");
@@ -131,10 +152,35 @@ public final class UiUtils {
 		textTable.append(headerBorder);
 
 		for (TableRow row : table.getRows()) {
+			StringBuilder rowLine = new StringBuilder();
 			for (Entry<Integer, TableHeader> entry : table.getHeaders().entrySet()) {
-				textTable.append(padding + CommonUtils.padRight(row.getValue(entry.getKey()), entry.getValue().getWidth()));
+				String value = row.getValue(entry.getKey());
+				if (value.length() > entry.getValue().getWidth()) {
+					Iterable<String> chunks = Splitter.fixedLength(entry.getValue().getWidth()).split(value);
+					int length = rowLine.length();
+					boolean first = true;
+					for (String chunk : chunks) {
+						if (first) {
+							rowLine.append(padding + CommonUtils.padRight(chunk, entry.getValue().getWidth()));
+						}
+						else {
+							rowLine.append(StringUtils.leftPad("", length) + padding + CommonUtils.padRight(chunk, entry.getValue().getWidth()));
+						}
+						first = false;
+						rowLine.append("\n");
+					}
+					rowLine.deleteCharAt(rowLine.lastIndexOf("\n"));
+				}
+				else {
+					rowLine.append(padding + CommonUtils.padRight(value, entry.getValue().getWidth()));
+				}
 			}
+			textTable.append(rowLine);
 			textTable.append("\n");
+		}
+
+		if (!withHeader) {
+			textTable.append(headerBorder);
 		}
 
 		return textTable.toString();

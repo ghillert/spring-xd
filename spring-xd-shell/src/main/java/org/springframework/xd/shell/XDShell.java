@@ -16,7 +16,12 @@
 
 package org.springframework.xd.shell;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,75 +34,115 @@ import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 import org.springframework.xd.rest.client.SpringXDOperations;
 import org.springframework.xd.rest.client.impl.SpringXDTemplate;
+import org.springframework.xd.shell.Target.TargetStatus;
+import org.springframework.xd.shell.util.UiUtils;
 
+/**
+ *
+ * @author Gunnar Hillert
+ * @since 1.0
+ *
+ */
 @Component
 public class XDShell implements CommandMarker, InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(XDShell.class);
-	
-	private String target;
 
 	private SpringXDOperations springXDOperations;
 
 	@Autowired
 	private CommandLine commandLine;
-	
-	private String host = "localhost";
-	
-	private String port = "8080";
-	
-	public XDShell() {		
 
+	private Target target;
+
+	public XDShell() {
 	}
-	
-	public String getTarget() {
+
+	/**
+	 * Return the {@link Target} which encapsulates not only the Target URI but
+	 * also success/error messages + status.
+	 *
+	 * @return Should not never be null.
+	 */
+	public Target getTarget() {
 		return target;
 	}
 
-	@CliCommand(value = { "target" }, help = "Select the XD admin server to use")
-	public String target(
-			@CliOption(mandatory = false, key = { "", "uri" }, help = "the location of the XD Admin REST endpoint", unspecifiedDefaultValue = "http://localhost:8080/")
-			String target) {
-		
+	@CliCommand(value = { "admin target" }, help = "Select the XD admin server to use")
+	public String target(@CliOption(mandatory = false, key = { "", "uri" },
+		help = "the location of the XD Admin REST endpoint",
+		unspecifiedDefaultValue = Target.DEFAULT_TARGET) String targetUriString) {
+
 		try {
-			springXDOperations = new SpringXDTemplate(URI.create(target));
-			this.target = target;
-			return String.format("Successfully targeted %s", target);
+			this.target = new Target(targetUriString);
+			this.springXDOperations = new SpringXDTemplate(this.target.getTargetUri());
+			this.target.setTargetResultMessage(String.format("Successfully targeted %s", target.getTargetUri()));
 		}
 		catch (Exception e) {
-			this.target = "unknown";
-			springXDOperations = null;
-			logger.warn("Unable to contact XD Admin - " + e.getMessage());
-			return String.format("Unable to contact XD Admin at %s", target);			
+			this.target.setTargetException(e);
+			this.springXDOperations = null;
+			this.target.setTargetResultMessage(String.format("Unable to contact XD Admin Server at '%s'.", targetUriString));
+
+			if (logger.isTraceEnabled()) {
+				logger.trace(this.target.getTargetResultMessage(), e);
+			}
 		}
+
+		return this.target.getTargetResultMessage();
+	}
+
+	@CliCommand(value = { "admin status" }, help = "Show the status of the targeted admin server")
+	public String status() {
+
+		final Map<String, String> statusValues = new TreeMap<String, String>();
+
+		statusValues.put("Target", this.target.getTargetUriAsString());
+		statusValues.put("Result", this.target.getTargetResultMessage());
+
+		final StringBuilder sb = new StringBuilder(UiUtils.renderParameterInfoDataAsTable(statusValues, false, 66));
+
+		if (TargetStatus.ERROR.equals(this.target.getStatus())) {
+			sb.append(UiUtils.HORIZONTAL_LINE);
+			sb.append("An exception ocurred during targeting:\n");
+
+			final StringWriter stringWriter = new StringWriter();
+			this.target.getTargetException().printStackTrace(new PrintWriter(stringWriter));
+
+			sb.append(stringWriter.toString());
+		}
+		return sb.toString();
 	}
 
 	public SpringXDOperations getSpringXDOperations() {
 		return springXDOperations;
 	}
-	
-	private String getDefaultUri() {
+
+	private URI getDefaultUri() throws URISyntaxException{
+
+		int port = Target.DEFAULT_PORT;
+		String host = Target.DEFAULT_HOST;
+
 		if (commandLine.getArgs() != null) {
 			String[] args = commandLine.getArgs();
 			int i = 0;
 			while (i < args.length) {
 				String arg = args[i++];
 				if (arg.equals("--host")) {
-					this.host = args[i++];
+					host = args[i++];
 				} else if (arg.equals("--port")) {
-					this.port = args[i++];
+					port = Integer.valueOf(args[i++]);
 				} else {
 					i--;
 					break;
 				}
 			}
 		}
-		return "http://" + this.host + ":" + this.port;
+		return new URI("http", null, host, port, null, null, null);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		target(getDefaultUri());
+		target(getDefaultUri().toString());
 	}
 
 }

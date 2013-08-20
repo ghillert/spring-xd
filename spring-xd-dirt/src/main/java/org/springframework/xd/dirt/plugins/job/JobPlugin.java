@@ -50,7 +50,6 @@ public class JobPlugin extends AbstractPlugin  {
 	private static final String REGISTRAR_WITH_FIXED_DELAY =
 			CONTEXT_CONFIG_ROOT + "registrar-with-fixed-delay.xml";
 	private static final String REGISTRAR = CONTEXT_CONFIG_ROOT + "registrar.xml";
-	private static final String COMMON_XML = CONTEXT_CONFIG_ROOT + "common.xml";
 	private static final String TRIGGER = "trigger";
 	private static final String CRON = "cron";
 	private static final String FIXED_DELAY= "fixedDelay";
@@ -58,10 +57,6 @@ public class JobPlugin extends AbstractPlugin  {
 	private static final String DATE_FORMAT = "dateFormat";
 	private static final String NUMBER_FORMAT = "numberFormat";
 	private static final String MAKE_UNIQUE = "makeUnique";
-
-	public JobPlugin(){
-		super.setPostProcessContextPaths(COMMON_XML);
-	}
 
 	@Override
 	public void configureProperties(Module module) {

@@ -106,3 +106,10 @@ xdService.factory('JobLaunchService', function($resource, growl, $rootScope) {
 	};
 });
 
+xdService.factory('User', function() {
+	var sdo = {
+			isLogged: false,
+			username: ''
+		};
+	return sdo;
+});

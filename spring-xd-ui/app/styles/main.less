@@ -14,205 +14,81 @@
 @import "../bower_components/bootstrap/less/bootstrap.less";
 @icon-font-path: "../fonts/glyphicons/";
 
+@spring-green:      #6db33f;
+@spring-dark-green: #5fa134;
+@spring-brown:      #34302D;
+@spring-grey:       #838789;
+@spring-light-grey: #f1f1f1;
+
+@body-bg:                           @spring-light-grey;
 @text-color:                        @gray-light;
-@navbar-default-link-hover-bg:      #6db33f;
-@navbar-default-link-color:         #eeeeee;
-@navbar-default-toggle-icon-bar-bg: #ccc;
-@navbar-default-link-active-bg:     #6db33f;
+@link-color:                        @spring-dark-green;
+@link-hover-color:                  @spring-dark-green;
+
+@navbar-default-link-color:         @spring-light-grey;
+@navbar-default-link-active-color:  @spring-light-grey;
+@navbar-default-link-hover-color:   @spring-light-grey;
+@navbar-default-link-hover-bg:      @spring-green;
+@navbar-default-toggle-icon-bar-bg: @spring-light-grey;
+@navbar-default-toggle-hover-bg:    transparent;
+@navbar-default-link-active-bg:     @spring-green;
 
 @border-radius-base:             0;
 @border-radius-large:            0;
 @border-radius-small:            0;
 
-@btn-default-color:              #F1F1F1;
-@btn-default-bg:                 #34302D;
-@btn-default-border:             #6db33f;
+@btn-default-color:              @spring-light-grey;
+@btn-default-bg:                 @spring-brown;
+@btn-default-border:             @spring-green;
 
 @icon-font-path: "../bower_components/bootstrap/dist/fonts/";
 
+@nav-tabs-active-link-hover-color:        @spring-light-grey;
+@nav-tabs-active-link-hover-bg:           @spring-brown;
+@nav-tabs-active-link-hover-border-color: @spring-brown;
+@nav-tabs-border-color:                   @spring-brown;
+@table-border-color:                      @spring-brown;
+
 @import (less) "../bower_components/angular-busy/dist/angular-busy.css";
 @import (less) "growl.css";
+@import "typography.less";
+@import "header.less";
+@import "login-page.less";
+@import "footer.less";
+
+.table > thead > tr > th {
+  background-color: lighten(@spring-brown, 3%);
+  color: @spring-light-grey;
+}
+
+.table-filter {
+  background-color: @spring-brown;
+  padding: 9px 12px;
+}
+
+.nav > li > a {
+  color: @spring-grey;
+}
 
 .btn-default {
-	border: 2px solid #6db33f;
+  border-width: 2px;
+  transition: border 0.15s;
+  -webkit-transition: border 0.15s;
+  -moz-transition: border 0.15s;
+  -o-transition: border 0.15s;
+  -ms-transition: border 0.15s;
 
-	transition: border 0.15s;
-	-webkit-transition: border 0.15s;
-	-moz-transition: border 0.15s;
-	-o-transition: border 0.15s;
-	-ms-transition: border 0.15s;
-}
-
-/*
-* Override bootstrap styles
-*/
-
-body {
-  background: #f4f4f4 url(../images/background.png);
-  font-size: 15px;
-}
-
-.navbar {
-	border-top: 4px solid #6db33f;
-	background-color: #34302d;
-	margin-bottom: 0px;
-	border-bottom: 0;
-	border-left: 0;
-	border-right: 0;
-}
-
-.navbar a.navbar-brand {
-	background: url("../images/spring-logo-xd.png") -1px -1px no-repeat;
-	margin: 12px 0 6px;
-	width: 229px;
-	height: 46px;
-	display: inline-block;
-	text-decoration: none;
-	padding: 0;
-}
-
-.navbar a.navbar-brand span {
-	display: block;
-	width: 229px;
-	height: 46px;
-	background: url("../images/spring-logo-xd.png") -1px -48px no-repeat;
-	opacity: 0;
-	-moz-transition: opacity 0.12s ease-in-out;
-	-webkit-transition: opacity 0.12s ease-in-out;
-	-o-transition: opacity 0.12s ease-in-out;
-}
-
-.navbar a:hover.navbar-brand span {
-	opacity: 1;
-}
-
-.navbar li > a, .navbar-text {
-	font-family: "Montserrat", sans-serif;
-	text-shadow: none;
-	font-size: 14px;
-
-	padding: 28px 20px;
-}
-
-.navbar li > a {
-	text-transform: uppercase;
-}
-
-.navbar .navbar-text {
-	margin-top: 0;
-	margin-bottom: 0;
-}
-.navbar li:hover > a {
-	color: #eeeeee;
-	background-color: #6db33f;
-}
-
-.homepage-billboard {
-	background-image: url("../images/homepage-bg.jpg");
-	background-size: cover;
-	background-repeat: no-repeat;
-	text-align: center;
-}
-
-.icon-spring-xd-logo {
-  width: 100px;
-  height: 100px;
-  background-image: url("../images/platform-spring-xd.png");
-  background-repeat: no-repeat;
-}
-
-.homepage-title--container {
-  margin-top: 66px;
-}
-
-.homepage-title, .homepage-subtitle {
-  background: rgba(52, 48, 45, 0.8);
-  color: #f1f1f1;
-  display: inline-block;
-}
-
-.homepage-title {
-  font-size: 48px;
-  line-height: 68px;
-  font-family: "Montserrat", sans-serif;
-  padding: 0 15px;
-  letter-spacing: -2px;
-}
-
-.homepage-subtitle {
-  font-size: 22px;
-  line-height: 18px;
-  padding: 2px 19px 12px;
-}
-.homepage-subtitle:first-child {
-  padding-top: 12px;
-}
-
-.platform--wrapper {
-  background: url("../images/platform-bg.png") #34302d 50% 50% no-repeat;
-  height: auto;
-  text-align: center;
-  padding: 60px 0;
-  background-size: 694px;
-}
-
-.platform--wrapper .platform--title {
-  font-family: "Montserrat", sans-serif;
-  color: #f1f1f1;
-  font-size: 30px;
-  line-height: 30px;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-}
-.platform--wrapper .platform--text {
-  color: #f1f1f1;
-  font-size: 18px;
-  line-height: 28px;
-  margin-bottom: 20px;
-}
-.platform--wrapper .platform--link {
-  font-size: 18px;
-  line-height: 28px;
-}
-.platform--wrapper .platform--link [class^="icon-"] {
-  margin-left: 15px;
-  line-height: 10px;
-  vertical-align: middle;
-  text-decoration: none;
+  &:hover,
+  &:focus,
+  &:active,
+  &.active,
+  .open .dropdown-toggle& {
+    background-color: @spring-brown;
+    border-color: @spring-brown;
+  }
 }
 
 
-
-
-
-
-#footer {
-	background-color: #34302d;
-	color: #eeeeee;
-}
-
-#footer a {
-  color: #6db33f;
-}
-
-/*----------------------------*/
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
-body > .container {
-  padding: 60px 15px 0;
-}
 .container .text-muted {
   margin: 20px 0;
 }
@@ -226,107 +102,28 @@ code {
   font-size: 80%;
 }
 
-/*----------------------------*/
-
-#xd-container {
-  border:1px solid #d1d1d1;
-  border-radius:7px;
-  background:#ffffff;
-  padding:5px;
-  position:relative;
-  margin-top: 15px;
-  margin-bottom: 15px;
+.xd-container {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#xd-jobs {
-  float: left;
+.index-page--subtitle {
+  font-size: 16px;
+  line-height: 24px;
+  margin: 30px 0 60px;
 }
 
-.nav-tabs > li > a {
-  color: #5d9936;
-}
-
-.form-horizontal .row {
-  margin-bottom: 7px;
-}
-
-.form-horizontal .add-on {
-  font: 14px/20px 'DaysRegular', Arial, sans-serif;
-}
-
-.form-horizontal .module-input .add-on {
-  padding: 4px 10px;
-  margin-left: 32px;
-}
-
-.form-horizontal .module-params .add-on {
-  padding: 4px 2px;
-  margin-left: 1px;
+.index-page--subtitle.with-subtext .subtext {
+  display: inline-block;
+  font-size: 14px;
+  margin: 21px 0 0;
+  color: fade(@spring-brown, 20%);
 }
 
 .form-horizontal button.btn-inverse {
   margin-left: 32px;
-}
-
-a:hover {
-  cursor:pointer;
-}
-
-.table td, .table th {
-  text-align: center;
-  padding: 5px;
-}
-
-.btn-mini {
-  padding: 0 3px;
-}
-
-/*
-* Custom styles
-*/
-
-#xd-dashboard {
-  margin-left: 5px;
-}
-
-.info-table thead td, #stream-detail-table thead td  {
-  font-weight: bold;
-  background-color: rgba(58, 58, 75, 0.23);
-}
-
-.detail-header {
-  font: 15px/16px 'DaysRegular', Arial, sans-serif;
-}
-
-.detailAction a {
-  color: black;
-}
-
-.jobDetailsRow {
-    display: none;
-}
-
-#streamTitle {
-  font-size: 30px;
-  padding: 30px 18px 5px;
-}
-
-#xd-status-msg {
-  margin: 5px 35px;
-  height: 40px;
-}
-
-.artifact_analytics {
-    position: relative;
-}
-
-.jobInstance {
-    cursor:pointer;
-    cursor:hand;
-}
-
-#batch > tbody > tr > td {
-    vertical-align:middle;
 }
 
 #job-params-modal .modal-dialog {
@@ -335,5 +132,4 @@ a:hover {
   margin-right:auto;
 }
 
-
-
+@import "responsive.less";

@@ -74,6 +74,21 @@ angular.module('App.Controllers', [])
 					});
 			};
 		})
+	.controller('LoginController', function($scope, $http, User, $state, growl) {
+		$scope.loginFormData = {};
+		$scope.login = function() {
+			User.isLogged = true;
+			User.username = $scope.loginFormData.name;
+			growl.addSuccessMessage('User ' + User.username + ' logged in.');
+			$state.go('home.jobs.definitions');
+		};
+	})
+	.controller('LogoutController', function($scope, $http, User, $state, growl) {
+		User.isLogged = false;
+		User.username = '';
+		growl.addSuccessMessage('User ' + User.username + ' logged out.');
+		$state.go('login');
+	})
 	.controller('LaunchJobController', function($scope, $http, $log, $state, $stateParams, growl, $location, JobLaunchService) {
 			var jobLaunchRequest = $scope.jobLaunchRequest = {
 				jobName: $stateParams.jobName,

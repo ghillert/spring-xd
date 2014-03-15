@@ -17,7 +17,7 @@ xdApp.run(function ($rootScope, $state, $stateParams, User, $log) {
   $rootScope.$state = $state;
   $rootScope.$stateParams = $stateParams;
   $rootScope.xdAdminServerUrl = window.location.protocol + '//' + window.location.host;
-  $rootScope.authenticationEnabled = false;
+  $rootScope.authenticationEnabled = true;
   $rootScope.user = User;
 
   $rootScope.$on('$stateChangeStart', function(event, toState) {
